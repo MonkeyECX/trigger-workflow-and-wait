@@ -91,14 +91,6 @@ api() {
   path=$1;
   http_method=$2; shift
 
-  echo "curl --fail-with-body -sSL \
-      -X ${http_method} \
-      \"${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/$path\" \
-      -H \"Authorization: Bearer ${INPUT_GITHUB_TOKEN}\" \
-      -H 'Accept: application/vnd.github.v3+json' \
-      -H 'Content-Type: application/json' \
-      \"$@\")"
-
   if response=$(curl --fail-with-body -sSL \
       -X ${http_method} \
       "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/$path" \
@@ -150,8 +142,9 @@ trigger_workflow() {
   echo >&2 "  {\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
 
   api "workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches" \
-    --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}" \ 
-    "POST"
+    "POST" \
+    --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
+    
 
   NEW_RUNS=$OLD_RUNS
   while [ "$NEW_RUNS" = "$OLD_RUNS" ]
