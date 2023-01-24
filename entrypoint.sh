@@ -88,7 +88,7 @@ lets_wait() {
 }
 
 api() {
-  path=$1; shift
+  path=$1;
   http_method=$2; shift
 
   if response=$(curl --fail-with-body -sSL \
