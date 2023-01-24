@@ -92,7 +92,7 @@ api() {
   http_method=$2; shift
 
   if response=$(curl --fail-with-body -sSL \
-      -X ${http_method}
+      -X ${http_method} \
       "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/$path" \
       -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
       -H 'Accept: application/vnd.github.v3+json' \
