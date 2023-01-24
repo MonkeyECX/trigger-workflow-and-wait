@@ -89,7 +89,10 @@ lets_wait() {
 
 api() {
   path=$1; shift
+  http_method=$2; shift
+
   if response=$(curl --fail-with-body -sSL \
+      -X ${http_method}
       "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/$path" \
       -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
       -H 'Accept: application/vnd.github.v3+json' \
@@ -123,7 +126,7 @@ get_workflow_runs() {
 
   echo "Getting workflow runs using query: ${query}" >&2
 
-  api "workflows/${INPUT_WORKFLOW_FILE_NAME}/runs?${query}" |
+  api "workflows/${INPUT_WORKFLOW_FILE_NAME}/runs?${query}" "GET" |
   jq -r '.workflow_runs[].id' |
   sort # Sort to ensure repeatable order, and lexicographically for compatibility with join
 }
@@ -139,7 +142,8 @@ trigger_workflow() {
   echo >&2 "  {\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
 
   api "workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches" \
-    --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
+    --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}" \ 
+    "POST"
 
   NEW_RUNS=$OLD_RUNS
   while [ "$NEW_RUNS" = "$OLD_RUNS" ]
@@ -187,7 +191,7 @@ wait_for_workflow_to_finish() {
   do
     lets_wait
 
-    workflow=$(api "runs/$last_workflow_id")
+    workflow=$(api "runs/$last_workflow_id" "GET")
     conclusion=$(echo "${workflow}" | jq -r '.conclusion')
     status=$(echo "${workflow}" | jq -r '.status')
 
@@ -220,7 +224,7 @@ main() {
   else
     echo "Skipping triggering the workflow."
   fi
-
+  echo "Wait for Workflow status: ${wait_workflow}"
   if [ "${wait_workflow}" = true ]
   then
     for run_id in $run_ids
