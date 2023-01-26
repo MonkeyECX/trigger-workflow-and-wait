@@ -127,7 +127,7 @@ get_workflow_runs() {
   echo "Getting workflow runs using query: ${query}" >&2
 
   curl --fail-with-body -sSL \
-      https://api.github.com/repos/MonkeyECX/monkey-spyros-argocd/actions/workflows/schedule.yml/runs \
+      "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/runs" \
       -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
       -H 'Accept: application/vnd.github.v3+json' | jq -r '.workflow_runs[].id' | sort
 }
