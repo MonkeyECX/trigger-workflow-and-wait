@@ -104,7 +104,7 @@ lets_wait() {
 #     echo >&2 "api failed:"
 #     echo >&2 "path: $path"
 #     echo >&2 "response: $response"
-#     if [[ "$response" == *'"Server Error"'* ]]; then 
+#     if [[ "$response" == *'"Server Error"'* ]]; then
 #       echo "Server error - trying again"
 #     else
 #       exit 1
@@ -126,44 +126,42 @@ get_workflow_runs() {
 
   echo "Getting workflow runs using query: ${query}" >&2
 
-  echo "${INPUT_GITHUB_TOKEN}" >&2
-
   curl --fail-with-body -sSL \
       https://api.github.com/repos/MonkeyECX/monkey-spyros-argocd/actions/workflows/schedule.yml/runs \
-      # -H 'Authorization: Bearer ${INPUT_GITHUB_TOKEN}' \
-      -H 'Accept: application/vnd.github.v3+json' 
-      
-      #| jq -r '.workflow_runs[].id' | sort
+      -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
+      -H 'Accept: application/vnd.github.v3+json' | jq -r '.workflow_runs[].id' | sort
 }
 
 trigger_workflow() {
   START_TIME=$(date +%s)
   SINCE=$(date -u -Iseconds -d "@$((START_TIME - 120))") # Two minutes ago, to overcome clock skew
-  echo  >&2 "Since: ${SINCE}"
+
   OLD_RUNS=$(get_workflow_runs "${SINCE}")
+
+  echo "${OLD_RUNS}" >&2
 
   echo >&2 "Triggering workflow:"
   echo >&2 "  workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches"
   echo >&2 "  {\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
   echo >&2 "  ${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches"
 
-  # curl --fail-with-body -sSL \
-  #     -X POST \
-  #     "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches" \
-  #     -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
-  #     -H 'Accept: application/vnd.github.v3+json' \
-  #     -H 'Content-Type: application/json' \
-  #     --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
+   curl --fail-with-body -sSL \
+       -X POST \
+       "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches" \
+       -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
+       -H 'Accept: application/vnd.github.v3+json' \
+       -H 'Content-Type: application/json' \
+       --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
 
-  # NEW_RUNS=$OLD_RUNS
-  # while [ "$NEW_RUNS" = "$OLD_RUNS" ]
-  # do
-  #   lets_wait
-  #   NEW_RUNS=$(get_workflow_runs "${SINCE}")
-  # done
+   NEW_RUNS=$OLD_RUNS
+   while [ "$NEW_RUNS" = "$OLD_RUNS" ]
+   do
+     lets_wait
+     NEW_RUNS=$(get_workflow_runs "${SINCE}")
+   done
 
-  # # Return new run ids
-  # join -v2 <(echo "$OLD_RUNS") <(echo "$NEW_RUNS")
+   # Return new run ids
+   join -v2 <(echo "$OLD_RUNS") <(echo "$NEW_RUNS")
 }
 
 comment_downstream_link() {
@@ -238,16 +236,16 @@ main() {
   else
     echo "Skipping triggering the workflow."
   fi
-  # echo "Wait for Workflow status: ${wait_workflow}"
-  # if [ "${wait_workflow}" = true ]
-  # then
-  #   for run_id in $run_ids
-  #   do
-  #     wait_for_workflow_to_finish "$run_id"
-  #   done
-  # else
-  #   echo "Skipping waiting for workflow."
-  # fi
+  echo "Wait for Workflow status: ${wait_workflow}"
+  if [ "${wait_workflow}" = true ]
+  then
+    for run_id in $run_ids
+    do
+      wait_for_workflow_to_finish "$run_id"
+    done
+  else
+    echo "Skipping waiting for workflow."
+  fi
 }
 
 main
