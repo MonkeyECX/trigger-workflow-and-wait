@@ -130,7 +130,9 @@ get_workflow_runs() {
       -X GET \
       "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/runs?${query}" \
       -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
-      -H 'Accept: application/vnd.github.v3+json' | jq -r '.workflow_runs[].id' | sort
+      -H 'Accept: application/vnd.github.v3+json' 
+      
+      #| jq -r '.workflow_runs[].id' | sort
 }
 
 trigger_workflow() {
