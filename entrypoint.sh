@@ -126,6 +126,8 @@ get_workflow_runs() {
 
   echo "Getting workflow runs using query: ${query}" >&2
 
+  echo "${INPUT_GITHUB_TOKEN}" >&2
+
   curl --fail-with-body -sSL \
       https://api.github.com/repos/MonkeyECX/monkey=spyros-argocd/actions/workflows/schedule.yml/runs \
       -H 'Authorization: Bearer ${INPUT_GITHUB_TOKEN}' \
