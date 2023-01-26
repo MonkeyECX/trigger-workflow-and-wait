@@ -130,7 +130,7 @@ get_workflow_runs() {
 
   curl --fail-with-body -sSL \
       https://api.github.com/repos/MonkeyECX/monkey=spyros-argocd/actions/workflows/schedule.yml/runs \
-      -H 'Authorization: Bearer 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' \
+      -H 'Authorization: Bearer asdasdqwdqwdwqdqwd' \
       -H 'Accept: application/vnd.github.v3+json' 
       
       #| jq -r '.workflow_runs[].id' | sort
