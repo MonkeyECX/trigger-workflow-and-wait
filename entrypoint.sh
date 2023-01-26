@@ -129,8 +129,8 @@ get_workflow_runs() {
   echo "${INPUT_GITHUB_TOKEN}" >&2
 
   curl --fail-with-body -sSL \
-      https://api.github.com/repos/MonkeyECX/monkey=spyros-argocd/actions/workflows/schedule.yml/runs \
-      -H 'Authorization: Bearer asdasdqwdqwdwqdqwd' \
+      https://api.github.com/repos/MonkeyECX/monkey-spyros-argocd/actions/workflows/schedule.yml/runs \
+      -H 'Authorization: Bearer ${INPUT_GITHUB_TOKEN}' \
       -H 'Accept: application/vnd.github.v3+json' 
       
       #| jq -r '.workflow_runs[].id' | sort
