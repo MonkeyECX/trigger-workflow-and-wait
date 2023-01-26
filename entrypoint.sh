@@ -152,15 +152,15 @@ trigger_workflow() {
   #     -H 'Content-Type: application/json' \
   #     --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
 
-  NEW_RUNS=$OLD_RUNS
-  while [ "$NEW_RUNS" = "$OLD_RUNS" ]
-  do
-    lets_wait
-    NEW_RUNS=$(get_workflow_runs "${SINCE}")
-  done
+  # NEW_RUNS=$OLD_RUNS
+  # while [ "$NEW_RUNS" = "$OLD_RUNS" ]
+  # do
+  #   lets_wait
+  #   NEW_RUNS=$(get_workflow_runs "${SINCE}")
+  # done
 
-  # Return new run ids
-  join -v2 <(echo "$OLD_RUNS") <(echo "$NEW_RUNS")
+  # # Return new run ids
+  # join -v2 <(echo "$OLD_RUNS") <(echo "$NEW_RUNS")
 }
 
 comment_downstream_link() {
@@ -235,16 +235,16 @@ main() {
   else
     echo "Skipping triggering the workflow."
   fi
-  echo "Wait for Workflow status: ${wait_workflow}"
-  if [ "${wait_workflow}" = true ]
-  then
-    for run_id in $run_ids
-    do
-      wait_for_workflow_to_finish "$run_id"
-    done
-  else
-    echo "Skipping waiting for workflow."
-  fi
+  # echo "Wait for Workflow status: ${wait_workflow}"
+  # if [ "${wait_workflow}" = true ]
+  # then
+  #   for run_id in $run_ids
+  #   do
+  #     wait_for_workflow_to_finish "$run_id"
+  #   done
+  # else
+  #   echo "Skipping waiting for workflow."
+  # fi
 }
 
 main
