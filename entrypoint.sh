@@ -87,30 +87,30 @@ lets_wait() {
   sleep "$wait_interval"
 }
 
-api() {
-  path=$1;
-  http_method=$2; shift
+# api() {
+#   path=$1;
+#   http_method=$2; shift
 
-  if response=$(curl --fail-with-body -sSL \
-      -X ${http_method} \
-      "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/$path" \
-      -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
-      -H 'Accept: application/vnd.github.v3+json' \
-      -H 'Content-Type: application/json' \
-      "$@")
-  then
-    echo "$response"
-  else
-    echo >&2 "api failed:"
-    echo >&2 "path: $path"
-    echo >&2 "response: $response"
-    if [[ "$response" == *'"Server Error"'* ]]; then 
-      echo "Server error - trying again"
-    else
-      exit 1
-    fi
-  fi
-}
+#   if response=$(curl --fail-with-body -sSL \
+#       -X ${http_method} \
+#       "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/$path" \
+#       -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
+#       -H 'Accept: application/vnd.github.v3+json' \
+#       -H 'Content-Type: application/json' \
+#       "$@")
+#   then
+#     echo "$response"
+#   else
+#     echo >&2 "api failed:"
+#     echo >&2 "path: $path"
+#     echo >&2 "response: $response"
+#     if [[ "$response" == *'"Server Error"'* ]]; then 
+#       echo "Server error - trying again"
+#     else
+#       exit 1
+#     fi
+#   fi
+# }
 
 lets_wait() {
   local interval=${1:-$wait_interval}
@@ -127,8 +127,8 @@ get_workflow_runs() {
   echo "Getting workflow runs using query: ${query}" >&2
 
   curl --fail-with-body -sSL \
-      "${GITHUB_API_URL}/repos/MonkeyECX/monkey=spyros-argocd/actions/workflows/schedule.yml/runs" \
-      -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
+      https://api.github.com/repos/MonkeyECX/monkey=spyros-argocd/actions/workflows/schedule.yml/runs \
+      -H 'Authorization: Bearer ${INPUT_GITHUB_TOKEN}' \
       -H 'Accept: application/vnd.github.v3+json' 
       
       #| jq -r '.workflow_runs[].id' | sort
