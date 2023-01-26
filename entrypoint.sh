@@ -144,13 +144,13 @@ trigger_workflow() {
   echo >&2 "  {\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
   echo >&2 "  ${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches"
 
-  curl --fail-with-body -sSL \
-      -X POST \
-      "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches" \
-      -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
-      -H 'Accept: application/vnd.github.v3+json' \
-      -H 'Content-Type: application/json' \
-      --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
+  # curl --fail-with-body -sSL \
+  #     -X POST \
+  #     "${GITHUB_API_URL}/repos/${INPUT_OWNER}/${INPUT_REPO}/actions/workflows/${INPUT_WORKFLOW_FILE_NAME}/dispatches" \
+  #     -H "Authorization: Bearer ${INPUT_GITHUB_TOKEN}" \
+  #     -H 'Accept: application/vnd.github.v3+json' \
+  #     -H 'Content-Type: application/json' \
+  #     --data "{\"ref\":\"${ref}\",\"inputs\":${client_payload}}"
 
   NEW_RUNS=$OLD_RUNS
   while [ "$NEW_RUNS" = "$OLD_RUNS" ]
